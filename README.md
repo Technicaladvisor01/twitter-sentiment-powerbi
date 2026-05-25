@@ -106,14 +106,14 @@ python 5_scheduler.py
 ## 🖼️ Dashboard Screenshots
 
 ### Overall View (All Topics)
-![Twitter Sentiment Dashboard - All Topics](dashboard/screenshots/image1.png)
+![Twitter Sentiment Dashboard - All Topics](dashboard/Screenshots/image1.png)
 
 > **10K** Total Tweets | **47.03%** Positive | **35.32%** Negative | **17.65%** Neutral | Avg VADER Score: **0.05**
 
 ---
 
 ### Filtered View (Sports Topic)
-![Twitter Sentiment Dashboard - Sports Filter](dashboard/screenshots/image2.png)
+![Twitter Sentiment Dashboard - Sports Filter](dashboard/Screenshots/image2.png)
 
 > **2,189** Tweets | **63.23%** Positive | **21.24%** Negative | **15.53%** Neutral | Avg VADER Score: **0.21**
 

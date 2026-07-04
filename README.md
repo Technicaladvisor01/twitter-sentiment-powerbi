@@ -16,7 +16,7 @@
 
 <br/>
 
-[🚀 Quick Start](#-getting-started) • [📊 Dashboard](#-dashboard-features) • [🗂️ Structure](#️-project-structure) • [📸 Screenshots](#️-dashboard-screenshots) • [👤 Author](#-author)
+[🚀 Quick Start](#-getting-started) • [📊 Dashboard](#-dashboard-features) • [🗂️ Structure](#-project-structure) • [📸 Screenshots](#-dashboard-screenshots) • [👤 Author](#-author)
 
 </div>
 
@@ -40,6 +40,7 @@ This end-to-end NLP pipeline:
 twitter-sentiment-powerbi/
 │
 ├── 📄 1_data_collection.py       # Fetches tweets using Twitter API v2
+├── 📄 0_xquik_import.py          # Converts Xquik exports into labeled tweet data
 ├── 📄 2_preprocessing.py         # Cleans, tokenizes & lemmatizes tweet text
 ├── 📄 3_modeling.py              # Sentiment scoring — VADER + ML models
 ├── 📄 4_powerbi_export.py        # Exports processed data to Excel for Power BI
@@ -116,6 +117,9 @@ TWITTER_KEYS = {
 ### 4. Run the Pipeline
 
 ```bash
+# Optional: convert a Xquik export before the Power BI export step
+python 0_xquik_import.py xquik-export.json
+
 # Run each stage individually
 python 1_data_collection.py
 python 2_preprocessing.py
@@ -125,6 +129,11 @@ python 4_powerbi_export.py
 # OR run the fully automated scheduler
 python 5_scheduler.py
 ```
+
+`0_xquik_import.py` accepts Xquik JSON, JSONL, or CSV exports and writes
+`data/labeled_tweets.csv`. `4_powerbi_export.py` now loads that file when it is
+present, so the Power BI workbook can refresh from real Xquik-backed tweet rows
+instead of only generated sample data.
 
 ### 5. Open the Dashboard
 

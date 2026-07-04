@@ -83,6 +83,42 @@ def generate_sample_data(n: int = 10_000) -> pd.DataFrame:
     return pd.DataFrame(records)
 
 
+def load_export_data(path: str = "data/labeled_tweets.csv", sample_size: int = 10_000) -> pd.DataFrame:
+    """Load converted pipeline data when present, otherwise use sample data."""
+    if not os.path.exists(path):
+        log.info("No %s found. Using generated sample data.", path)
+        return generate_sample_data(sample_size)
+
+    df = pd.read_csv(path, parse_dates=["created_at"])
+    df["created_at"] = pd.to_datetime(df["created_at"], errors="coerce")
+    df = df.dropna(subset=["created_at"]).copy()
+    df["date"] = df.get("date", df["created_at"].dt.date)
+    df["hour_of_day"] = df.get("hour_of_day", df["created_at"].dt.hour)
+    df["day_of_week"] = df.get("day_of_week", df["created_at"].dt.strftime("%A"))
+    df["week"] = df.get("week", df["created_at"].dt.strftime("%Y-W%U"))
+    df["month"] = df.get("month", df["created_at"].dt.strftime("%Y-%m"))
+    if "sentiment" in df.columns:
+        df["sentiment"] = df["sentiment"].fillna("neutral").astype(str).str.lower()
+    if "word_count" not in df.columns and "text" in df.columns:
+        df["word_count"] = df["text"].fillna("").astype(str).str.split().str.len()
+
+    for column, default in {
+        "tweet_id": "",
+        "topic": "General",
+        "sentiment": "neutral",
+        "vader_compound": 0.0,
+        "confidence": 0.0,
+        "retweet_count": 0,
+        "like_count": 0,
+        "word_count": 0,
+    }.items():
+        if column not in df.columns:
+            df[column] = default
+
+    log.info("Loaded %s rows from %s.", len(df), path)
+    return df
+
+
 # ──────────────────────────────────────────────
 # Table 1 — Fact table: tweets
 # ──────────────────────────────────────────────
@@ -200,11 +236,7 @@ def export_excel_workbook(df, daily, kpis, heatmap, metrics):
 if __name__ == "__main__":
     log.info("Generating Power BI export data...")
 
-    # ── Load real data (uncomment when running after full pipeline) ──
-    # df = pd.read_csv("data/labeled_tweets.csv", parse_dates=["created_at"])
-
-    # ── Use sample data for demo ──
-    df = generate_sample_data(10_000)
+    df = load_export_data()
 
     fact    = export_fact_tweets(df)
     daily   = export_daily_sentiment(df)
